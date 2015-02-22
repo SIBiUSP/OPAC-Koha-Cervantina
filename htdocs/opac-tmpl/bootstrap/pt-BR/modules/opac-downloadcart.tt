@@ -1,0 +1,32 @@
+[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálogo &rsaquo; Download do carrinho [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-downloadcart' bodyclass='popup' %]
+ <div class="main">
+ <div class="container-fluid">
+ <div class="row-fluid">
+ <div class="span12">
+ <div id="userdownloadcart">
+ <h1>Download do carrinho</h1>
+ <form method="post" action="/cgi-bin/koha/opac-downloadcart.pl">
+ <select name="format" id="format">
+ <option value="">-- Escolha o formato --</option>
+ <option value="ris">RIS (Zotero, EndNote, outros)</option>
+ <option value="bibtex">BibTeX</option>
+ <option value="iso2709">MARC</option>
+ [% FOREACH csv_profile IN csv_profiles %]
+ <option value="[% csv_profile.export_format_id %]">CSV - [% csv_profile.profile %]</option>
+ [% END %]
+ </select>
+ <fieldset class="action">
+ <input type="hidden" name="bib_list" value="[% bib_list | html %]" />
+ <input value="Pesquisar" name="save" type="submit" />
+ <a class="cancel close" href="#">Cancelar</a>
+ </fieldset>
+ </form>
+ <p><a class="close" href="#">Fechar esta janela</a></p>
+ </div> <!-- / #userdownloadcart -->
+ </div> <!-- / .span10 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+[% INCLUDE 'opac-bottom.inc' is_popup=1 %]
+[% BLOCK jsinclude %][% END %]

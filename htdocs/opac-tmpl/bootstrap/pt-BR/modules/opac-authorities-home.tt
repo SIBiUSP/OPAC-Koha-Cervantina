@@ -1,0 +1,85 @@
+[% USE Koha %] [% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálogo &rsaquo; Busca de autoridades [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-authorities' bodyclass='scrollto' %]
+[% INCLUDE 'masthead.inc' %]
+
+ <div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Início</a> <span class="divider">&rsaquo;</span></li>
+ <li><a href="#">Resultados da pesquisa por autoridades</a></li>
+ </ul>
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ [% IF ( OpacNav || OpacNavBottom ) %]
+ <div class="span2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' %]
+ </div>
+ </div>
+ <div class="span10">
+ [% ELSE %]
+ <div class="span12">
+ [% END %]
+ <div id="userauthhome" class="maincontent">
+ <form name="f" action="/cgi-bin/koha/opac-authorities-home.pl" method="get">
+ <input type="hidden" name="op" value="do_search" />
+ <input type="hidden" name="type" value="opac" />
+ <fieldset class="rows">
+ <legend>Resultados da pesquisa por autoridades</legend>
+ <ol>
+ <li>
+ <label for="authtypecode">Tipo de autoridade: </label>
+ <select name="authtypecode" id="authtypecode">
+ [% FOREACH authtypesloo IN authtypesloop %]
+ [% IF ( authtypesloo.selected ) %]
+ <option value="[% authtypesloo.value %]" selected="selected">[% authtypesloo.authtypetext %]</option>
+ [% ELSE %]
+ <option value="[% authtypesloo.value %]"> [% authtypesloo.authtypetext %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="anywhere">Pesquisar opções:</label>
+ <select name="operator" id="anywhere">
+ <option value="contains">contém</option>
+ <option value="start">começa com</option>
+ <option value="is">é exatamente</option>
+ </select>
+ </li>
+ <li>
+ <label for="value">Termo(s):</label>
+ <input type="text" name="value" id="value" value="[% value %]" />
+ </li>
+ <li>
+ <label for="marclist">Onde:</label>
+ <select name="marclist" id="marclist">
+ <option value="any" selected="selected">em palavra-chave</option>
+ <option value="match">em qualquer cabeçalho</option>
+ <option value="mainentry">no registro principal</option>
+ </select>
+ </li>
+ <li>
+ <input type="hidden" name="and_or" value="and" />
+ <input type="hidden" name="excluding" value="" />
+ <label for="orderby">Ordenar por: </label>
+ <select name="orderby" id="orderby">
+ <option value="">Nenhum</option>
+ <option value="HeadingAsc" selected="selected">Cabeçalho ascendente</option>
+ <option value="HeadingDsc">Cabeçalho descendente</option>
+ </select>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input value="Enviar" type="submit" class="btn" />
+ </fieldset>
+ </form>
+ </div> <!-- / #userauthhome -->
+ </div> <!-- / .span10/12 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %][% END %]

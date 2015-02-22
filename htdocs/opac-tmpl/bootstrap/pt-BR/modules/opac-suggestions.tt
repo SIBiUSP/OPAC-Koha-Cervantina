@@ -1,0 +1,304 @@
+[% USE Koha %] [% USE AuthorisedValues %] [% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálogo &rsaquo; [% IF ( op_add ) %]Faça uma nova sugestão de aquisição[% END %] [% IF ( op_else ) %]Sugestões de aquisição[% END %] [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+[% IF ( loggedinusername ) %][% INCLUDE 'bodytag.inc' bodyid='opac-usersuggestions' bodyclass='scrollto' %][% ELSE %][% INCLUDE 'bodytag.inc' bodyid='opac-suggestions' bodyclass='scrollto' %][% END %]
+[% INCLUDE 'masthead.inc' %]
+
+ <div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Início</a> <span class="divider">&rsaquo;</span></li>
+ <li><a href="/cgi-bin/koha/opac-user.pl">[% FOREACH USER_INF IN USER_INFO %][% USER_INF.title %] [% USER_INF.firstname %] [% USER_INF.surname %][% END %]</a> <span class="divider">&rsaquo;</span></li>
+ <li><a href="#">Sugestões de aquisição</a></li>
+ </ul>
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ <div class="span2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ <div class="span10">
+ <div id="usersuggestions" class="maincontent">
+ [% IF ( op_add ) %]
+ <h1>Digite uma nova sugestão de aquisição</h1>
+
+ <p>Preencha este formulário para sugerir uma aquisição. Você receberá um e-mail quando a biblioteca processar a sua sugestão</p>
+ <p>Somente o título é obrigatório, mas quanto mais informações forem fornecidas, mais facilmente o bibliotecário encontrará o título solicitado. O campo "Notas" pode ser usado para fornecer qualquer informação adicional.</p>
+
+ <form action="/cgi-bin/koha/opac-suggestions.pl" method="post">
+ <fieldset class="rows">
+ <ol>
+ <li><label class="required" for="title">Título:</label><input type="text" id="title" name="title" class="span6" maxlength="255" /></li>
+ <li><label for="author">Autor:</label><input type="text" id="author" name="author" class="span6" maxlength="80" /></li>
+ <li><label for="copyrightdate">Data de copyright:</label><input type="text" id="copyrightdate" name="copyrightdate" size="4" maxlength="4" /></li>
+ <li><label for="isbn">Número padrão (ISBN, ISSN ou outro):</label><input type="text" id="isbn" name="isbn"  maxlength="80" /></li>
+ <li><label for="publishercode">Editora:</label><input type="text" id="publishercode" name="publishercode" class="span6" maxlength="80" /></li>
+ <li><label for="collectiontitle">Título da coleção:</label><input type="text" id="collectiontitle" name="collectiontitle" class="span6" maxlength="80" /></li>
+ <li><label for="place">Local de publicação:</label><input type="text" id="place" name="place"  maxlength="80" /></li>
+ <li><label for="itemtype">Tipo de material:</label>
+ <select name="itemtype" id="itemtype">
+ <option value="">Padrão</option>
+ [% FOREACH itemtypeloo IN itemtypeloop %]
+ [% IF ( itemtypeloo.selected ) %]
+ <option value="[% itemtypeloo.itemtype %]" selected="selected">
+ [% ELSE %]
+ <option value="[% itemtypeloo.itemtype %]">
+ [% END %]
+ [% itemtypeloo.description %]
+ </option>
+ [% END %]
+ </select>
+ </li>
+ [% IF ( branchloop ) %]
+ <li><label for="branch">Biblioteca:</label>
+ <select name="branchcode" id="branch">
+ [% FOREACH branchloo IN branchloop %]
+ [% IF ( branchloo.selected ) %]
+ <option value="[% branchloo.branchcode %]" selected="selected">[% branchloo.branchname %]</option>
+ [% ELSE %]
+ <option value="[% branchloo.branchcode %]">[% branchloo.branchname %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ [% END %]
+ [% IF ( patron_reason_loop ) %]
+ <li>
+ <label for="patronreason">Motivo da sugestão: </label>
+ <select name="patronreason" id="patronreason">
+ <option value="">-- Escolha --</option>
+ [% FOREACH patron_reason_loo IN patron_reason_loop %]
+ <option value="[% patron_reason_loo.authorised_value %]">[% patron_reason_loo.lib %]</option>
+ [% END %]
+ </select>
+ </li>
+ [% END %]
+ <li>
+ <label for="note">Notas:</label>
+ <textarea name="note" id="note" rows="5" cols="40"></textarea>
+ </li>
+
+ <!-- Add a hidden 'negcap' field -->
+ <li id="negcap" style="position: absolute; left: -2000px;">
+ negcap <input type="text" name="negcap"/>
+ </li>
+
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input type="hidden" name="suggestedby" value="[% suggestedbyme %]" />
+ <input type="hidden" name="op" value="add_confirm" />
+ <input value="Enviar a sua sugestão" type="submit" onclick="Check(this.form); return false;" class="btn" /> <a class="action" href="/cgi-bin/koha/opac-suggestions.pl">Cancelar</a>
+ </fieldset>
+ </form>
+ [% END #  IF op_add %]
+
+ [% IF ( op_else ) %]
+ <h1>
+ [% IF Koha.Preference( 'OPACViewOthersSuggestions' ) == 1 %] Sugestões de aquisição [% ELSE %] [% IF ( loggedinusername ) %] Sugestões de aquisição [% ELSE %] Sugestões de aquisição [% END %] [% END %] </h1>
+
+ [% IF ( deleted ) %]<div class="alert alert-info">As sugestões selecionadas foram excluídas.</div>[% END %]
+ [% IF ( submitted ) %]<div class="alert alert-info">Sua sugestão foi enviada.</div>[% END %]
+
+ [% IF ( suggestions_loop ) %]
+ [% IF Koha.Preference( 'OPACViewOthersSuggestions' ) == 1 %]
+ <form action="/cgi-bin/koha/opac-suggestions.pl" class="form-inline" method="get">
+ <fieldset>
+ <label for="title">Pesquisar por:</label>
+ <input type="text" name="title" id="title" value="[% title |html %]" />
+ <label for="suggestedby">Sugerido por:</label>
+ <div class="input-append">
+ <select name="suggestedby" id="suggestedby">
+ <option value="0">Qualquer pessoa</option>
+ <option value="1">Eu</option>
+ </select>
+ <button type="submit" class="btn">Pesquisar</button>
+ </div>
+ </fieldset>
+ </form>
+ [% END %]
+ <form action="/cgi-bin/koha/opac-suggestions.pl" method="post" id="myform">
+ <input type="hidden" name="op" value="delete_confirm" />
+ <div id="toolbar" class="toolbar clearfix">
+ [% IF ( loggedinusername || ( Koha.Preference( 'AnonSuggestions' ) == 1 ) ) %]
+ <a class="new" href="/cgi-bin/koha/opac-suggestions.pl?op=add">Nova sugestão de aquisição</a>
+ [% END %]
+ </div>
+
+ [% IF ( loggedinusername ) %]
+ <div id="selections-toolbar" class="toolbar">
+ <span class="checkall"></span> <span class="clearall"></span> <span class="sep">|</span>
+ <span class="links"><span id="selections">Selecionar sugestões para: </span>
+ <span id="removeitems"></span>
+ </div>
+ [% END %]
+
+ <table id="suggestt" class="checkboxed table table-bordered table-striped">
+ <thead>
+ <tr>
+ [% IF ( loggedinusername ) %]<th>&nbsp;</th>[% END %]
+ <th>Resumo</th>
+ <th>Nota</th>
+ [% IF Koha.Preference( 'OPACViewOthersSuggestions' ) == 1 %]<th>Sugerido para</th>[% END %]
+ [% IF Koha.Preference( 'OpacSuggestionManagedBy' ) %]<th>Gerenciado por</th>[% END %]
+ <th>Status</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH suggestions_loo IN suggestions_loop %]
+ <tr>
+ [% IF ( loggedinusername ) %]
+ <td>
+ [% IF ( suggestions_loo.showcheckbox ) %]
+ <input type="checkbox" class="cb" name="delete_field" value="[% suggestions_loo.suggestionid %]" />
+ [% END %]
+ </td>
+ [% END %]
+ <td>
+ <p><strong>[% suggestions_loo.title |html %]</strong></p>
+ <p>[% IF ( suggestions_loo.author ) %][% suggestions_loo.author |html %],[% END %]
+ [% IF ( suggestions_loo.copyrightdate ) %] - [% suggestions_loo.copyrightdate |html %],[% END %]
+ [% IF ( suggestions_loo.publishercode ) %] - [% suggestions_loo.publishercode |html %][% END %]
+ [% IF ( suggestions_loo.place ) %]([% suggestions_loo.place |html %])[% END %]
+ [% IF ( suggestions_loo.collectiontitle ) %] , [% suggestions_loo.collectiontitle |html %][% END %]
+ [% IF ( suggestions_loo.itemtype ) %] - [% suggestions_loo.itemtype %][% END %]
+ </p>
+ </td>
+ <td>
+ [% IF ( suggestions_loo.note ) %]
+ <span class="tdlabel">Notas: </span>
+ [% suggestions_loo.note |html %]
+ [% END %]
+ </td>
+ [% IF Koha.Preference( 'OPACViewOthersSuggestions' ) == 1 %]
+ <td>
+ [% IF ( suggestions_loo.branchcodesuggestedby ) %]
+ <span class="tdlabel">Sugerido para:</span>
+ [% suggestions_loo.branchcodesuggestedby %]
+ [% END %]
+ </td>
+ [% END %]
+ [% IF Koha.Preference( 'OpacSuggestionManagedBy' ) %]
+ <td>
+ [% IF ( suggestions_loo.surnamemanagedby ) %]
+ <span class="tdlabel">Gerenciado por:</span>
+ [% suggestions_loo.surnamemanagedby %]
+ [% IF ( suggestions_loo.firstnamemanagedby ) %] , [% suggestions_loo.firstnamemanagedby %]
+ [% END %]
+ [% END %]
+ </td>
+ [% END %]
+ <td>
+ <span class="tdlabel">Status:</span>
+ [% IF ( suggestions_loo.ASKED ) %]Requisitado [% ELSIF ( suggestions_loo.CHECKED ) %]Analisada pela biblioteca [% ELSIF ( suggestions_loo.ACCEPTED ) %]Aceito pela biblioteca [% ELSIF ( suggestions_loo.ORDERED ) %]Adquirido pela biblioteca [% ELSIF ( suggestions_loo.REJECTED ) %]Sugestão recusada [% ELSIF ( suggestions_loo.AVAILABLE ) %]Disponível na biblioteca [% ELSE %] [% AuthorisedValues.GetByCode( 'SUGGEST_STATUS', suggestions_loo.STATUS, 1 ) %] [% END %] [% IF ( suggestions_loo.reason ) %]([% suggestions_loo.reason |html %])[% END %] </td>
+ </tr>
+ [% END # / FOREACH suggestions_loo %]
+ </tbody>
+ </table>
+
+ [% IF ( loggedinusername ) %]
+ <fieldset class="action">
+ <input value="Excluir selecionados" type="submit" class="btn btn-danger" />
+ </fieldset>
+ [% END %]
+ </form>
+ [% ELSE %]
+ <p>Não há sugestões de aquisição pendentes.</p>
+ [% IF ( loggedinusername || ( Koha.Preference( 'AnonSuggestions' ) == 1 ) ) %]
+ <p><a class="new" href="/cgi-bin/koha/opac-suggestions.pl?op=add">Nova sugestão de aquisição</a></p>
+ [% END %]
+ [% END # / IF suggestions_loop %]
+
+ [% END # IF op_else %]
+ </div> <!-- / #usersuggestions -->
+ </div> <!-- / .span10 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+<script type="text/javascript" src="[% interface %]/[% theme %]/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
+[% INCLUDE 'datatables.inc' %]
+<script type="text/javascript">
+    //<![CDATA[
+    [% IF ( loggedinusername ) %]
+        function enableCheckboxActions(){
+            // Enable/disable controls if checkboxes are checked
+            var checkedBoxes = $(".checkboxed input:checkbox:checked");
+            if ($(checkedBoxes).size()) {
+              $("#selections").html(_("Com sugestões selecionadas: "));
+              $("#selections-toolbar .links a").removeClass("disabled");
+            } else {
+              $("#selections").html(_("Selecionar sugestões para: "));
+              $("#selections-toolbar .links a").addClass("disabled");
+            }
+        }
+    [% END %]
+
+    $(function() {
+        $("#suggestt").dataTable($.extend(true, {}, dataTablesDefaults, {
+            "aaSorting": [[ 1, "asc" ]],
+            "aoColumnDefs": [
+              [% IF ( loggedinusername ) %]{ "aTargets": [ 0 ], "bSortable": false, "bSearchable": false }[% END %]
+            ],
+            "aoColumns": [
+                [% IF ( loggedinusername ) %]null,[% END %]
+                { "sType": "anti-the" },
+                null,
+                [% IF ( OPACViewOthersSuggestions ) %]null,[% END %]
+                [% IF Koha.Preference( 'OpacSuggestionManagedBy' ) %]null,[% END %]
+                null
+            ]
+        }));
+        [% IF ( loggedinusername ) %]$("span.clearall").html("<a id=\"CheckNone\" href=\"#\">"+_("Limpar tudo")+"<\/a>");
+        $("span.checkall").html("<a id=\"CheckAll\" href=\"#\">"+_("Selecionar todos")+"<\/a>");
+        $("#CheckAll").click(function(){
+            $(".checkboxed").checkCheckboxes();
+            enableCheckboxActions();
+            return false;
+        });
+        $("#CheckNone").click(function(){
+            $(".checkboxed").unCheckCheckboxes();
+            enableCheckboxActions();
+            return false;
+        });
+        $(".cb").click(function(){
+          enableCheckboxActions();
+        });
+        $("#removeitems").html("<a href=\"#\" class=\"removeitems tag_hides disabled\">"+_("Excluir")+"</a>")
+        .click(function(e){
+          e.preventDefault();
+          $("#myform").submit();
+          return false;
+        });
+        enableCheckboxActions();
+        $("#myform").on('submit', function() {
+          if ( $("input:checked").size() < 1 ) {
+            alert(MSG_NO_SUGGESTION_SELECTED);
+            return false;
+          }
+          return true;
+        });
+        [% END %]
+    });
+
+    function Check(f) {
+        var _alertString="";
+        var alertString2;
+
+        if(f.title.value.length ==0){
+            _alertString += _("- Você precisa digitar um título") + "\n";
+        }
+
+        if (_alertString.length==0) {
+            f.submit();
+        } else {
+            alertString2 = _("Formulário não enviado pelo(s) seguinte(s) problema(s)");
+            alertString2 += "\n------------------------------------------------------------------------------------\n\n";
+            alertString2 += _alertString;
+            alert(alertString2);
+        }
+    }
+//]]>
+</script>
+[% END %]

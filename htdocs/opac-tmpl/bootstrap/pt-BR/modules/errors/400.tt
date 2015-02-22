@@ -1,0 +1,39 @@
+[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálogo &rsaquo; Ocorreu um erro [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+<body id="error400">
+[% INCLUDE 'masthead.inc' %]
+
+ <div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Início</a> <span class="divider">&rsaquo;</span></li>
+ <li><a href="#">Erro 400</a></li>
+ </ul>
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ [% IF ( OpacNav || OpacNavBottom ) %]
+ <div class="span2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' %]
+ </div>
+ </div>
+ <div class="span10">
+ [% ELSE %]
+ <div class="span12">
+ [% END %]
+ <div id="errormsg400">
+ <h3>Ocorreu um erro</h3>
+ <h4>Erro 400</h4>
+ <ul>
+ <li>Este erro significa que o endereço do Koha é inválido.</li>
+ <li>Para reportar este erro, você pode <a href="mailto:[% admin %]">e-mail para o administrador do Koha</a>.</li>
+ <li>Devolver para <a href="/cgi-bin/koha/opac-main.pl">catálogo</a>.</li>
+ </ul>
+ </div> <!-- / #errormsg400 -->
+ </div> <!-- / .span10/12 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+[% END %]

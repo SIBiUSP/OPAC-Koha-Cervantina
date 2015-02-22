@@ -1,0 +1,27 @@
+[% INCLUDE 'doc-head-open.inc' %] [% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálogo [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-blocked' %]
+[% INCLUDE 'masthead.inc' %]
+<div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Início</a> <span class="divider">&rsaquo;</span></li>
+ <li>Registro bloqueado</li>
+ </ul>
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ <div class="span9">
+ <div id="opac-blocked-message">
+ <h3>Bloqueado</h3>
+ <p>Você não tem autorização para visualizar este registro.</p>
+ [% IF ( OpacSuppressionMessage ) %]
+ <div id="opacsuppressionmessage">
+ [% OpacSuppressionMessage %]
+ </div>
+ [% END %]
+ </div>
+ </div>
+ </div>
+ </div>
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %][% END %]

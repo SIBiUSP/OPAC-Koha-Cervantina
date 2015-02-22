@@ -1,0 +1,57 @@
+[% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha [% END %] &rsaquo; Auto-empréstimo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Koha [% Version %]" /> <!-- leave this for stats -->
+<link rel="shortcut icon" href="[% IF ( OpacFavicon  ) %][% OpacFavicon  %][% ELSE %][% interface %]/[% theme %]/images/favicon.ico[% END %]" type="image/x-icon" />
+ <link rel="stylesheet" type="text/css" href="[% interface %]/[% theme %]/lib/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="[% interface %]/[% theme %]/lib/jquery/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" href="[% interface %]/[% theme %]/css/sco.css" />
+[% IF ( OPACUserCSS ) %]<style type="text/css">[% OPACUserCSS %]</style>[% END %]
+[% IF ( SCOUserCSS ) %]<style type="text/css">[% SCOUserCSS %]</style>[% END %]
+<!--[if lt IE 9]>
+ <script src="[% interface %]/[% theme %]/lib/respond.min.js"></script>
+<![endif]-->
+<script type="text/javascript">
+    function _(s) { return s } // dummy function for gettext
+</script>
+<script type="text/javascript" src="[% interface %]/[% theme %]/lib/modernizr.min.js"></script>
+</head>
+<body>
+[% INCLUDE 'masthead-sco.inc' %]
+
+ <div class="main">
+ <div class="container-fluid">
+ <div class="row-fluid">
+
+<h1>Ajuda para o auto-empréstimo</h1>
+
+[% IF ( SelfCheckHelpMessage ) %]
+<div id="selfcheckhelpmessage">
+[% SelfCheckHelpMessage %]
+</div>
+[% END %]
+
+<p>Se esta for sua primeira vez utilizando o sistema de auto-empréstimo, ou se o sistema não está se comportando conforme esperado, consulte este guia para compreender o sistema.</p>
+
+<h3>Passo um: Insira seu ID de usuário[% IF ( SelfCheckoutByLogin ) %] e senha[% END %]</h3>
+<p>Digite seu ID de usuário[% IF ( SelfCheckoutByLogin ) %] e senha[% END %], e clique no botão enviar (ou pressione o botão enter).</p>
+
+<h3>Passo dois: Insira o código de barras de cada item, um por vez</h3>
+<p>Empreste um exemplar e espere a página carregar antes de emprestar o próximo. A retirada de exemplares deve aparecer na lista de exemplares. O botão de Enviar apenas precisa ser clicado caso você digite o código de barras manualmente.</p>
+
+<h3>Passo três: Clique no botão 'Encerrar'</h3>
+<p>Caso você não clique no botão 'Encerrar', sua sessão expirará automaticamente em [% SelfCheckTimeout %] segundos.</p>
+
+ <div class="button">
+ <a href="javascript:history.go(-1)">Retornar ao auto-empréstimo</a>
+ </div>
+
+ </div> <!-- / #showreviews -->
+ </div> <!-- / .span10/12 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+[% IF ( SCOUserJS ) %]<script type="text/javascript">[% SCOUserJS %]</script>[% END %]
+[% END %]

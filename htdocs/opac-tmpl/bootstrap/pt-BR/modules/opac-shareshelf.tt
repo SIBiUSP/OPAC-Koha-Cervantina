@@ -1,0 +1,88 @@
+[% USE Koha %] [% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálogo &rsaquo; Compartilhar uma lista [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+
+[% INCLUDE 'bodytag.inc' bodyid='opac-shareshelf' bodyclass='scrollto' %]
+[% INCLUDE 'masthead.inc' %]
+<div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Início</a> <span class="divider">&rsaquo;</span></li>
+ [% IF ( loggedinusername ) %]
+ <li><a href="/cgi-bin/koha/opac-user.pl">[% FOREACH USER_INF IN USER_INFO %][% USER_INF.title %] [% USER_INF.firstname %] [% USER_INF.surname %][% END %]</a> <span class="divider">&rsaquo;</span></li>
+ [% END %]
+ <li>Compartilhar uma lista</li>
+ </ul> <!-- / .breadcrumb -->
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ [% IF ( OpacNav ) %]
+ <div class="span2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ [% END %]
+
+[%# This section contains the essential code for error messages and three operations: invite, confirm_invite and accept. %]
+ <h2>Compartilhar uma lista com outro usuário</h2>
+ <div class="span10">
+ <div id="shareshelf" class="maincontent">
+
+ [% IF errcode %]
+ [% IF errcode==1 && op %]<div class="alert">A operação [% op %] não é suportada.</div>[% END %]
+ [% IF errcode==1 && !op %]<div class="alert">Nenhum parâmetro de operação foi passado.</div>[% END %]
+ [% IF errcode==2 %]<div class="alert">Número de chamada inválido.</div>[% END %]
+ [% IF errcode==3 %]<div class="alert">A funcionalidade de compartilhamento de listas não é usada nesta biblioteca.</div>[% END %]
+ [% IF errcode==4 %]<div class="alert">Você só pode compartilhar a lista se for seu proprietário.</div>[% END %]
+ [% IF errcode==5 %]<div class="alert">Você não pode compartilhar uma lista pública.</div>[% END %]
+ [% IF errcode==6 %]<div class="alert">Desculpe, mas você não digitou um e-mail válido.</div>[% END %]
+ [% IF errcode==7 %]<div class="alert">Desculpe, mas não podemos aceitar esta chave. O convite pode ter expirado. Entre em contato com o usuário que lhe enviou este convite.</div>[% END %]
+ [% IF errcode==8 %]<div class="alert">Como proprietário da lista você não pode aceitar um convite para compartilhá-la.</div>[% END %]
+ <p><a href="/cgi-bin/koha/opac-shelves.pl?display=privateshelves">Voltar para suas listas</a></p>
+
+ [% ELSIF op=='invite' %]
+ <div id="invite">
+ <form method="post" onsubmit="return $('#invite_address').val().trim()!='';">
+ <fieldset class="rows">
+ <ol>
+ <input type="hidden" name="op" value="conf_invite"/>
+ <input type="hidden" name="shelfnumber" value="[% shelfnumber %]"/>
+ <li><label for="name">Nome da lista:</label> [% shelfname %]</li>
+ <li>
+ <label for="invite_address">Endereço de e-mail:</label>
+ <input id="invite_address" name="invite_address"/>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input value="Enviar" type="submit" class="btn" />
+ <a href="/cgi-bin/koha/opac-shelves.pl?display=privateshelves" class="cancel">Cancelar</a>
+ </fieldset>
+ </form>
+ </div>
+
+ [% ELSIF op=='conf_invite' %]
+ <div id="conf_invite">
+ [% IF approvedaddress %]
+ <p>Um convite para lista compartilhada <i>[% shelfname %]</i> will be sent shortly to [% approvedaddress %].</p>
+ [% END %]
+ [% IF failaddress %]
+ <p>Aconteceu algo errado ao processar estes endereços. Favor os confira. Os endereços são: [% failaddress %]</p>
+ [% END %]
+ [% IF approvedaddress %]
+ <p>Você receberá um e-mail se alguém aceitar seu compartilhamento no prazo de duas semanas.</p>
+ [% END %]
+ <p><a href="/cgi-bin/koha/opac-shelves.pl?display=privateshelves">Voltar para suas listas</a></p>
+ </div>
+
+ [% ELSIF op=='accept' %]
+ [%# Nothing to do: we already display an error or we redirect. %]
+ [% END %]
+
+ </div> <!-- / .span10 -->
+ </div> <!-- / .maincontent -->
+[%# End of essential part %]
+
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+</div> <!-- / .main -->
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %][% END %]

@@ -1,0 +1,54 @@
+[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálogo &rsaquo; Enviando sua lista [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+[% INCLUDE 'bodytag.inc' bodyid='sendshelf' bodyclass='popup' %]
+ <div class="main">
+ <div class="container-fluid">
+ <div class="row-fluid">
+ <div class="span12">
+ <div id="usersendshelfform">
+ [% IF ( email ) %]
+ [% IF ( SENT ) %]
+ <h1>Mensagem enviada</h1>
+ <div class="alert alert-success">
+ <p>A lista foi enviado para: [% email %]</p>
+ </div>
+ <p><a class="focus close" href="/cgi-bin/koha/opac-shelves.pl?viewshelf=[% shelfid %]">Voltar para as listas</a></p>
+ [% END %]
+ [% IF ( error ) %]
+ <div class="alert">
+ <p>Problemas ao enviar a lista.</p>
+ </div>
+ [% END %]
+ [% ELSE %]
+ [% IF ( invalidlist ) %]
+ <div class="alert">
+ <p>Você não tem permissão para enviar esta lista.</p>
+ </div>
+ <p><a class="button close" href="/cgi-bin/koha/opac-shelves.pl?viewshelf=[% shelfid %]">Voltar para as listas</a></p>
+ [% ELSE %]
+ <h1>Enviando sua lista</h1>
+ <form action="[% url %]" method="post" id="sendshelfform">
+ <fieldset>
+ <label for="email">Endereço de e-mail:</label>
+ <input type="text" id="email" name="email" size="43" class="focus" />
+
+ <label for="comment">Comentário:</label>
+ <textarea id="comment" name="comment" rows="4" cols="40"></textarea>
+
+ <input type="hidden" name="shelfid" value="[% shelfid %]" />
+ </fieldset>
+ <fieldset class="action">
+ <input value="Enviar" type="submit" class="btn" />
+ <a class="cancel close" href="/cgi-bin/koha/opac-shelves.pl?viewshelf=[% shelfid %]">Cancelar</a>
+ </fieldset>
+ </form>
+
+ [% END # / IF invalidlist %]
+ [% END # / IF email %]
+ </div> <!-- / #usersendshelfform -->
+ </div> <!-- / .span12 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' is_popup=1 %]
+[% BLOCK jsinclude %][% END %]

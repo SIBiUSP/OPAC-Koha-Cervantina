@@ -1,0 +1,71 @@
+[% USE Koha %]
+[% USE AuthorisedValues %]
+
+[% INCLUDE 'doc-head-open.inc' %]
+[% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalog &rsaquo; Courses
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %]
+ <link rel="stylesheet" type="text/css" href="[% interface %]/[% theme %]/css/datatables.css" />
+[% END %]
+
+</head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-main' %]
+[% INCLUDE 'masthead.inc' %]
+
+<div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Início</a> <span class="divider">&rsaquo;</span></li>
+ <li><a href="#">Bibliografia de cursos</a></li>
+ </ul>
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ <div class="span12">
+
+ <h1>Cursos</h1>
+
+ <table id="course_reserves_table" class="table table-bordered table-striped table-condensed">
+ <thead>
+ <tr>
+ <th>Nome</th>
+ <th>Depto.</th>
+ <th>Curso #</th>
+ <th>Seção</th>
+ <th>Prazo</th>
+ <th>Instrutores</th>
+ <th>Notas</th>
+ </tr>
+ </thead>
+
+ <tbody>
+ [% FOREACH c IN courses %]
+ <tr>
+ <td><a href="opac-course-details.pl?course_id=[% c.course_id %]">[% c.course_name %]</a></td>
+ <td>[% AuthorisedValues.GetByCode( 'DEPARTMENT', c.department, 1 ) %]</td>
+ <td>[% c.course_number %]</td>
+ <td>[% c.section %]</td>
+ <td>[% AuthorisedValues.GetByCode( 'TERM' c.term ) %]</td>
+ <td>
+ [% FOREACH i IN c.instructors %]
+ <div class="instructor">[% i.firstname %] [% i.surname %]</div>
+ [% END %]
+ </td>
+ <td>[% c.public_note %]</td>
+ [% END %]
+ </tbody>
+ </table>
+ </div> <!-- / .span12 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+</div> <!-- / .main -->
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $("#course_reserves_table").dataTable($.extend(true, {}, dataTablesDefaults, {
+            "sDom": '<"top"flp>rt<"clear">',
+        }));
+    });
+    </script>
+[% END %]

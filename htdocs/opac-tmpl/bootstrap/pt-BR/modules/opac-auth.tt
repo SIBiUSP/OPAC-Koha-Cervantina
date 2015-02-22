@@ -1,0 +1,174 @@
+[% USE Koha %] [% INCLUDE 'doc-head-open.inc' %] [% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálogo &rsaquo; [% IF Koha.Preference( 'opacuserlogin' ) == 1 %] Faça log in [% ELSE %] Log in desativado [% END %] [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-login-page' bodyclass='scrollto' %]
+[% INCLUDE 'masthead.inc' %]
+
+<div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Início</a> <span class="divider">&rsaquo;</span></li>
+ <li><a href="#">Login</a></li>
+ </ul>
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ <div class="span7 offset2">
+ <div id="opac-auth" class="maincontent">
+ <!--CONTENT-->
+ [% IF Koha.Preference( 'opacuserlogin' ) == 1 %]
+ [% IF ( nopermission ) %]
+ <!-- This is what is displayed if user doesnt have permission -->
+ <div class="alert">
+ <h3>Acesso negado</h3>
+ <p>Desculpe, o sistema não permite o acesso a esta página. </p>
+ </div>
+ [% END %]
+
+ [% IF ( loginprompt ) %]
+ <!-- login prompt time-->
+ <h3>Acesse sua conta</h3>
+
+ [% IF ( timed_out ) %]
+ <!-- This is what is displayed if login has timed out -->
+ <div class="alert alert-info">
+ <p>Desculpe, sua sessão expirou. Faça o login novamente.</p>
+ </div>
+ [% END %]
+
+ [% IF ( different_ip ) %]
+ <!-- This is what is displayed if user doesnt have permission -->
+ <div class="alert alert-info">
+ <p>Você está tentando logar de um IP diferente. Por favor inicie a sessão novamente.</p>
+ </div>
+ [% END %]
+
+ [% IF ( invalid_username_or_password ) %]
+ <!-- This is what is displayed if user doesnt have permission -->
+ <div class="alert alert-info">
+ <p>You entered an incorrect username or password. Please try again! And remember, passwords are case sensitive.</p>
+ </div>
+ [% END %]
+
+ [% IF ( shibbolethAuthentication ) %]
+
+ [% IF ( invalidShibLogin ) %]
+ <!-- This is what is displayed if shibboleth login has failed to match a koha user -->
+ <div class="alert alert-info">
+ <p>
+ Sorry, your Shibboleth identity does not match a valid library identity.
+ [% IF ( casAuthentication ) %]
+ [% IF ( invalidCasLogin ) %]
+ <!-- This is what is displayed if cas login has failed -->
+ <p>Sorry, the CAS login also failed, if you have a local login you may use that below.</p>
+ [% ELSE %]
+ If you have a <acronym title="Serviço central de autenticação">CAS</acronym> account, you may use that below.
+ [% END %]
+ [% ELSE %]
+ If you have a local account, you may use that below.
+ [% END %]
+ </p>
+ </div>
+ [% ELSE %]
+ <h4>Shibboleth Login</h4>
+
+ <p>If you have a Shibboleth account,
+ please <a href="[% shibbolethLoginUrl %]">clique aqui para entrar</a>.</p>
+ [% END %]
+ [% IF ( casAuthentication ) %]
+ <h4>Login CAS</h4>
+ <p>If you do not have a Shibboleth account, but you do have a <acronym title="Serviço central de autenticação">CAS</acronym> account,
+ [% ELSE %]
+ <h4>Login local</h4>
+ <p>If you do not have a Shibboleth account, but you do have a local login, then you may login below:</p>
+ [% END %] [% END %] [% IF ( casAuthentication ) %] [% IF ( shibbolethAuthentication ) %] [% IF ( casServerUrl ) %] favor <a href="[% casServerUrl %]">clique aqui para entrar</a>.<p>
+ [% END %]
+
+ [% IF ( casServersLoop ) %]
+ please choose against which one you would like to authenticate: </p>
+ <ul>
+ [% FOREACH casServer IN casServersLoop %]
+ <li><a href="[% casServer.value %]">[% casServer.name %]</a></li>
+ [% END %]
+ </ul>
+ [% END %]
+ [% ELSE %]
+ <h4>Login CAS</h4>
+
+ [% IF ( invalidCasLogin ) %]
+ <!-- This is what is displayed if cas login has failed -->
+ <p>Desculpe, o login CAS falhou.</p>
+ [% END %]
+
+ <p>Se você tiver um(a) <acronym title="Serviço central de autenticação">CAS</acronym> conta, [% IF ( casServerUrl ) %] favor <a href="[% casServerUrl %]">clique aqui para entrar</a>.<p>
+ [% END %]
+
+ [% IF ( casServersLoop ) %]
+ please choose against which one you would like to authenticate: </p>
+ <ul>
+ [% FOREACH casServer IN casServersLoop %]
+ <li><a href="[% casServer.value %]">[% casServer.name %]</a></li>
+ [% END %]
+ </ul>
+ [% END %]
+ [% END %]
+
+ [% IF ( shibbolethAuthentication ) %]
+ <p>Nothing</p>
+ [% ELSE %]
+ <h4>Login local</h4>
+ <p>If you do not have a CAS account, but do have a local account, you can still log in: </p>
+ [% END %]
+
+ [% END # / IF casAuthentication %]
+
+ <form action="[% url %]" name="auth" id="auth" method="post">
+ <input type="hidden" name="koha_login_context" value="opac" />
+ <fieldset class="brief">
+ [% FOREACH INPUT IN INPUTS %]
+ <input type="hidden" name="[% INPUT.name |html %]" value="[% INPUT.value |html %]" />
+ [% END %]
+ <label for="userid">Login</label>
+ <input type="text"  size="25" id="userid"  name="userid" />
+ <label for="password">Senha</label><input type="password"  size="25" id="password"  name="password" />
+ </fieldset>
+
+ <input value="Login" type="submit" class="btn" />
+ <div id="nologininstructions">
+ [% IF Koha.Preference('NoLoginInstructions') %]
+ [% Koha.Preference('NoLoginInstructions') %]
+ [% ELSE %]
+ <h5>Ainda não tem senha?</h5><p> Se você ainda não tem uma senha, passe no balcão de circulação para escolher uma.</p>
+ <h5>Não tem cadastro da biblioteca?</h5><p> Se você não tem um cartão da biblioteca, passe na biblioteca mais próxima para se cadastrar.</p>
+ [% END # / IF Koha.Preference('NoLoginInstructions') %]
+ [% IF PatronSelfRegistration && PatronSelfRegistrationDefaultCategory %]<span id="registrationinstructions">Você pode <a href="/cgi-bin/koha/opac-memberentry.pl">registrar</a>.</span>[% END %]
+ </div>
+ </form>
+ [% END # / IF loginprompt %]
+
+ [% ELSE %]
+ <h4>A autenticação no catálogo não foi habilitada pela biblioteca.</h4>
+ <ul>
+ <li>Para reportar este erro, você pode <a href="mailto:[% admin %]">e-mail para o administrador do Koha</a>.</li>
+ <li>Utilize o menu superior para navegar pelo programa.</li>
+ </ul>
+ [% END # / IF opacuserlogin %]
+
+ [% IF persona %]
+ <p><a href="#" class="persona-button" id="browserid" ><span>Seu e-mail</span></a></p>
+ [% END %]
+
+ </div> <!-- /.opac-auth -->
+ </div> <!-- /.span12 -->
+ </div> <!-- /.row-fluid -->
+ </div> <!-- /.container-fluid -->
+</div> <!-- /.main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+<script type="text/javascript">
+//<![CDATA[
+    // Hide circular 'Log in to Your Account' link in opac-auth.pl
+    $(document).ready(function() {
+        if ( $("#auth" ) ) { $("#members ul li a").hide(); }
+    });
+//]]>
+</script>
+[% END %]

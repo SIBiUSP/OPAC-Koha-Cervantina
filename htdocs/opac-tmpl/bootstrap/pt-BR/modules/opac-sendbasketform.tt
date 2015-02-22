@@ -1,0 +1,48 @@
+[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálogo &rsaquo; Enviando carrinho [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+[% INCLUDE 'bodytag.inc' bodyid='addtolist' bodyclass='popup' %]
+ <div class="main">
+ <div class="container-fluid">
+ <div class="row-fluid">
+ <div class="span12">
+ <div id="usersendbasket">
+ [% IF ( email_add ) %]
+
+ [% IF ( SENT ) %]
+ <h1>Mensagem enviada</h1>
+ <div class="dialog dialog-success">
+ <p>A sacola foi enviada para: [% email_add %]</p>
+ </div>
+ <p><a class="focus close" href="#">Fechar janela</a></p>
+ [% END %]
+
+ [% IF ( error ) %]
+ <div class="alert">
+ <p>Problema ao enviar o carrinho.</p>
+ </div>
+ [% END %]
+
+ [% ELSE %]
+ <h1>Enviando sua sacola</h1>
+ <form action="[% url %]" method="post" id="sendbasketform">
+ <fieldset>
+ <label for="email_add">Endereço de e-mail:</label>
+ <input type="text" id="email_add" name="email_add" size="43" class="focus" />
+ <label for="comment">Comentário:</label>
+ <textarea id="comment" name="comment" rows="4" cols="40"></textarea>
+ <input type="hidden" name="bib_list" value="[% bib_list %]" />
+ </fieldset>
+ <fieldset class="action">
+ <input value="Enviar" type="submit" class="btn" />
+ <a class="cancel close" href="#">Cancelar</a>
+ </fieldset>
+ </form>
+
+ [% END # / IF email_add %]
+ </div> <!-- / #usersendbasket -->
+ </div> <!-- / .span12 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' is_popup=1 %]
+[% BLOCK jsinclude %][% END %]

@@ -1,0 +1,1 @@
+[%- SWITCH index -%] [%- CASE 'su-na' -%] Pesquisar também por assuntos específicos [%- CASE 'su-br' -%] Pesquisar também por assuntos gerais [%- CASE 'su-rl' -%] Pesquisar também por assuntos relacionados [%- END -%] 

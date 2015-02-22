@@ -1,0 +1,193 @@
+[% USE Koha %] [% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %] [% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálog &rsaquo; Seu histórico de pesquisa [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-search-history' bodyclass='scrollto' %]
+[% INCLUDE 'masthead.inc' %]
+
+<div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Início</a> <span class="divider">&rsaquo;</span></li>
+ [% IF ( loggedinusername ) %]
+ <li><a href="#">Histórico de pesquisa</a></li>
+ [% ELSE %]
+ <li><a href="#">Histórico de pesquisa</a></li>
+ [% END %]
+ </ul>
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ [% IF ( OpacNav||loggedinusername ) %]
+ <div class="span2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ <div class="span10">
+ [% ELSE %]
+ <div class="span12">
+ [% END %]
+ <div id="searchhistory" class="maincontent">
+ <h1>Histórico de pesquisa</h1>
+
+ [% IF Koha.Preference( 'OpacAuthorities' ) == 1 %]
+ <div id="tabs" class="toptabs">
+ <ul>
+ <li><a href="#biblio_tab">Pesquisas no catálogo</a></li>
+ <li><a href="#authority_tab">Pesquisas por autoridade</a></li>
+ </ul>
+ [% END %]
+ <div id="biblio_tab">
+ [% IF ( current_biblio_searches ) %]
+ <h2>Sessão atual</h2>
+ <form action="/cgi-bin/koha/opac-search-history.pl" method="get">
+ <input type="hidden" name="action" value="delete" />
+ <input type="hidden" name="previous" value="0" />
+ <input type="hidden" name="type" value="biblio" />
+ <input value="Excluir seu histórico de pesquisa" type="submit" class="deleteshelf" onclick="return confirm(MSG_CONFIRM_DELETE_HISTORY);" />
+ </form>
+ <table class="historyt table table-bordered table-condensed table-striped">
+ <thead>
+ <tr>
+ <th>Data</th>
+ <th>Pesquisar</th>
+ <th>Resultados</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH s IN current_biblio_searches %]
+ <tr>
+ <td><span title="[% s.time %]">[% s.time |$KohaDates with_hours => 1 %]</span></td>
+ <td><a href="[% OPACBaseURL %]/cgi-bin/koha/opac-search.pl?[% query_cgi |html |url %][% limit_cgi |html | url %]&amp;[% s.query_cgi |html %]&amp;count=[% countrss |html %]&amp;sort_by=acqdate_dsc&amp;format=rss2" class="rsssearchlink"><img alt="Inscrever-se para esta pesquisa" src="[% interface %]/[% theme %]/images/feed-icon-16x16.png" title="Inscrever-se para esta pesquisa" class="rsssearchicon" /></a> <a href="/cgi-bin/koha/opac-search.pl?[% s.query_cgi |html %]">[% s.query_desc |html %]</a></td>
+ <td>[% s.total %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% END %]
+
+ [% IF ( previous_biblio_searches ) %]
+ <h2>Sessões anteriores</h2>
+ <form action="/cgi-bin/koha/opac-search-history.pl" method="get">
+ <input type="hidden" name="action" value="delete" />
+ <input type="hidden" name="previous" value="1" />
+ <input type="hidden" name="type" value="biblio" />
+ <input value="Excluir seu histórico de pesquisa" type="submit" class="deleteshelf" onclick="return confirm(MSG_CONFIRM_DELETE_HISTORY);" />
+ </form>
+ <table class="historyt table table-bordered table-condensed table-striped">
+ <thead>
+ <tr>
+ <th>Data</th>
+ <th>Pesquisar</th>
+ <th>Resultados</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH s IN previous_biblio_searches %]
+ <tr>
+ <td><span title="[% s.time %]">[% s.time |$KohaDates with_hours => 1 %]</span></td>
+ <td><a href="[% OPACBaseURL %]/cgi-bin/koha/opac-search.pl?[% query_cgi |html |url %][% limit_cgi |html | url %]&amp;[% s.query_cgi |html %]&amp;count=[% countrss |html %]&amp;sort_by=acqdate_dsc&amp;format=rss2" class="rsssearchlink"><img alt="Inscrever-se para esta pesquisa" src="[% interface %]/[% theme %]/images/feed-icon-16x16.png" title="Inscrever-se para esta pesquisa" class="rsssearchicon" /></a> <a href="/cgi-bin/koha/opac-search.pl?[% s.query_cgi |html %]">[% s.query_desc |html %]</a></td>
+ <td>[% s.total %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% END %]
+
+ [% IF !current_biblio_searches && !previous_biblio_searches %]
+ <p>Seu histórico de busca está vazio.</p>
+ [% END %]
+ </div>
+
+
+ [% IF Koha.Preference( 'OpacAuthorities' ) == 1 %]
+ <div id="authority_tab">
+ [% IF ( current_authority_searches ) %]
+ <h2>Sessão atual</h2>
+ <form action="/cgi-bin/koha/opac-search-history.pl" method="get">
+ <input type="hidden" name="action" value="delete" />
+ <input type="hidden" name="previous" value="0" />
+ <input type="hidden" name="type" value="authority" />
+ <input value="Excluir seu histórico de pesquisas em autoridades" type="submit" class="deleteshelf" onclick="return confirm(MSG_CONFIRM_DELETE_HISTORY);" />
+ </form>
+ <table class="historyt table table-bordered table-condensed table-striped">
+ <thead>
+ <tr>
+ <th>Data</th>
+ <th>Pesquisar</th>
+ <th>Resultados</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH s IN current_authority_searches %]
+ <tr>
+ <td><span title="[% s.time %]">[% s.time |$KohaDates with_hours => 1 %]</span></td>
+ <td><a href="/cgi-bin/koha/opac-authorities-home.pl?[% s.query_cgi |html %]">[% s.query_desc |html %]</a></td>
+ <td>[% s.total %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% END %]
+
+ [% IF ( previous_authority_searches ) %]
+ <h2>Sessões anteriores</h2>
+ <form action="/cgi-bin/koha/opac-search-history.pl" method="get">
+ <input type="hidden" name="action" value="delete" />
+ <input type="hidden" name="previous" value="1" />
+ <input type="hidden" name="type" value="authority" />
+ <input value="Excluir seu histórico de pesquisa em autoridades" type="submit" class="deleteshelf" onclick="return confirm(MSG_CONFIRM_DELETE_HISTORY);" />
+ </form>
+ <table class="historyt table table-bordered table-condensed table-striped">
+ <thead>
+ <tr>
+ <th>Data</th>
+ <th>Pesquisar</th>
+ <th>Resultados</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH s IN previous_authority_searches %]
+ <tr>
+ <td><span title="[% s.time %]">[% s.time |$KohaDates with_hours => 1 %]</span></td>
+ <td><a href="/cgi-bin/koha/opac-authorities-home.pl?[% s.query_cgi |html %]">[% s.query_desc |html %]</a></td>
+ <td>[% s.total %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% END %]
+
+ [% IF !current_authority_searches && !previous_authority_searches %]
+ <p>Seu histórico de busca de autoridade está vazio.</p>
+ [% END %]
+ </div>
+ </div>
+ [% END %]
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+[% INCLUDE 'datatables.inc' %]
+<script type="text/javascript">
+//<![CDATA[
+    var MSG_CONFIRM_DELETE_HISTORY = _("Tem certeza de que deseja excluir seu histórico de pesquisa?");
+         $(document).ready(function() {
+            // We show table ordered by descending dates by default
+            // (so that the more recent query is shown first)
+            $(".historyt").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aaSorting": [[ 0, "desc" ]],
+                "aoColumns": [
+                    { "sType": "title-string" },
+                    null,
+                    null
+                ]
+            }));
+        });
+
+    [% IF Koha.Preference( 'OpacAuthorities' ) == 1 %]$('#tabs').tabs();[% END %]
+//]]>
+
+</script>
+[% END %]

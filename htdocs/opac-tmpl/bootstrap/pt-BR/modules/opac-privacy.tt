@@ -1,0 +1,83 @@
+[% USE Koha %] [% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálogo &rsaquo; Configurações de privacidade [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-privacy' %]
+[% INCLUDE 'masthead.inc' %]
+
+<div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Início</a> <span class="divider">&rsaquo;</span></li>
+ <li><a href="/cgi-bin/koha/opac-user.pl">[% firstname %] [% surname %]</a> <span class="divider">&rsaquo;</span></li>
+ <li><a href="#">Configurações pessoais</a></li>
+ </ul>
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ <div class="span2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ <div class="span10">
+ <div id="userprivacy">
+ <h3>Configurações pessoais</h3>
+
+ [% IF ( deleted ) %]
+ <div class="alert alert-success">Seu histórico de leitura foi apagado.</div>
+ [% ELSIF ( err_history_not_deleted ) %]
+ <div class="alert">A supressão do seu histórico de leitura falhou, porque existe um problema com a configuração deste recurso. Por favor, ajudem a corrigir o sistema, informando a sua biblioteca do erro.</div>
+ [% END %]
+
+ [% IF ( privacy_updated ) %]
+ <div class="alert alert-success">Suas configurações de privacidade foram atualizadas.</div>
+ [% END %]
+
+ [% IF ( Ask_data ) %]
+ <p>Nos preocupamos muito com sua privacidade. Nesta tela, você pode definir por quanto tempo será guardado o seu histórico de leitura.</p>
+ <p>Suas opções são: <p>
+ <ul id="opac-privacy-options-list">
+ <li class="privacy0">Eternamente: mantenha meu histórico de empréstimos sem impor limites. Esta opção deve ser usada por usuários que querem manter um histórico de seus empréstimos.</li>
+ <li class="privacy1">Padrão: Mantenha meu histórico de empréstimos de acordo com as regras locais. Esta é a opção padrão : a biblioteca manterá seu histórico de empréstimos pela duração estabelecida pelas regras locais.</li>
+ <li class="privacy2">Nunca: Apague meu histórico de empréstimos imediatamente. Isso apagará todos os registros de materiais que foram emprestados.</li>
+ </ul>
+ <p id="note1">Esteja ciente de que informações sobre empréstimos são mantidas pela biblioteca não importando que opções de privacidade você escolheu.</p>
+ <p id="note2">Esteja ciente de que nenhum funcionário da biblioteca pode atualizar estes valores pra você: diz respeito à sua privacidade!</p>
+ <form action="/cgi-bin/koha/opac-privacy.pl" method="post" id="opac-privacy-update-form">
+ <input type="hidden" name="op" value="update_privacy" />
+ <fieldset>
+ <label for="privacy">Por favor escolha suas regras de privacidade:</label>
+ <div class="input-append">
+ <select name="privacy" id="privacy">
+ [% IF ( privacy0 ) %]
+ <option value="0" selected="selected" class="privacy0">Eternamente</option>
+ [% ELSE %]
+ <option value="0" class="privacy0">Eternamente</option>
+ [% END %]
+ [% IF ( privacy1 ) %]
+ <option value="1" selected="selected" class="privacy1">Padrão</option>
+ [% ELSE %]
+ <option value="1" class="privacy1">Padrão</option>
+ [% END %]
+ [% IF ( privacy2 ) %]
+ <option value="2" selected="selected" class="privacy2">Nunca</option>
+ [% ELSE %]
+ <option value="2" class="privacy2">Nunca</option>
+ [% END %]
+ </select>
+ <button type="Submit" class="btn">Enviar</button>
+ </div>
+ </fieldset>
+ </form>
+ <h2>Exclusão imediata</h2>
+ <form action="/cgi-bin/koha/opac-privacy.pl" method="post" id="opac-privacy-delete-form">
+ <input type="hidden" name="op" value="delete_record" />
+ <p>Seja qual for a sua opção, você pode excluir todo o seu histórico imediatamente clicando aqui. <b>TENHA CUIDADO</b>. Uma vez que você tenha confirmado a exclusão, não será possível recuperar a lista!</p>
+ <input value="Exclusão imediata" type="submit" class="btn btn-danger" onclick="return confirmDelete(MSG_CONFIRM_AGAIN);" />
+ </form>
+ [% END # / IF Ask_data %]
+ </div> <!-- / .userprivacy -->
+ </div> <!-- / .span10 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+</div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %][% END %]

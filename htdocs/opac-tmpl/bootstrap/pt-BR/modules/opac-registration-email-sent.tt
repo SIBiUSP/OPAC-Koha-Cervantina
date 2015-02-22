@@ -1,0 +1,38 @@
+[% USE Koha %] [% INCLUDE 'doc-head-open.inc' %] [% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálogo &rsaquo; Favor confirmar seu registro [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-confirmation-pending' %]
+[% INCLUDE 'masthead.inc' %]
+
+ <div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Início</a> <span class="divider">&rsaquo;</span></li>
+ <li><a href="#">Registrar nova conta</a></li>
+ </ul>
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ [% IF ( OpacNav ) %]
+ <div class="span2">
+ <div id="opacnav">
+ [% INCLUDE 'navigation.inc' %]
+ </div>
+ </div>
+ <div class="span10">
+ [% ELSE %]
+ <div class="span12">
+ [% END %]
+ <div id="reistration-confirmation-pending">
+ <div id="confirmation-pending" class="alert alert-info">
+ <h1>Por favor confirme seu registro</h1>
+
+ <p>A confirmation email will be sent shortly to the email address <strong>[% email %]</strong>.</p>
+
+ <p>Sua conta ainda não está ativa. Para ativa-lá confirme clicando no link fornecido no e-mail de confirmação.</p>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %][% END %]

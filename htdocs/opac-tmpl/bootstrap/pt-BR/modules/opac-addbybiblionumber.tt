@@ -1,0 +1,101 @@
+[% INCLUDE 'doc-head-open.inc' %] [% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catálogo &rsaquo; Adicionar a sua lista [% INCLUDE 'doc-head-close.inc' %] [% BLOCK cssinclude %][% END %] </head>
+[% INCLUDE 'bodytag.inc' bodyid='addtolist' bodyclass='popup' %]
+ <div class="main">
+ <div class="container-fluid">
+ <div class="row-fluid">
+ <div class="span12">
+ <div id="useraddbybiblionumber">
+ [% IF ( authorized ) %]
+ [% UNLESS ( newshelf ) %]
+ [% IF ( multiple ) %]
+ <h1>Adicionar [% total %] itens ao [% IF ( singleshelf ) %]<em>[% shelfname %]</em>: [% ELSE %]uma lista:[% END %]</h1>
+ [% ELSE %]
+ <h1>Adicione [% IF ( singleshelf ) %]<em>[% shelfname %]</em>[% ELSE %]uma lista:[% END %]</h1>
+ [% END %]
+ <ul>
+ [% FOREACH biblio IN biblios %]
+ <li> <span class="title">[% biblio.title |html %]</span>
+ [% IF ( biblio.author ) %]<span class="author"> [% biblio.author %] </span>[% END %]
+ </li>
+ [% END %]
+ </ul>
+ [% IF ( existingshelves ) %]
+ <form name="f1" action="/cgi-bin/koha/opac-addbybiblionumber.pl" method="post">
+ <fieldset>
+ <legend>Selecionar uma lista</legend>
+ <label for="shelfnumber">Adicionar à lista:</label> <select name="shelfnumber" id="shelfnumber">
+ [% IF ( privatevirtualshelves ) %]<optgroup label="Listas privadas">
+ [% FOREACH privatevirtualshelve IN privatevirtualshelves %]
+ <option value="[% privatevirtualshelve.shelfnumber %]">[% privatevirtualshelve.shelfname %]</option>
+ [% END %]
+ </optgroup>[% END %]
+ [% IF ( publicvirtualshelves ) %]<optgroup label="Listas públicas">
+ [% FOREACH publicvirtualshelve IN publicvirtualshelves %]
+ <option value="[% publicvirtualshelve.shelfnumber %]">[% publicvirtualshelve.shelfname %]</option>
+ [% END %]
+ </optgroup>[% END %]
+ </select>
+ [% FOREACH biblio IN biblios %]
+ <input type="hidden" name="biblionumber" value="[% biblio.biblionumber %]" />
+ [% END %]
+ <input type="hidden" name="modifyshelfcontents" value="1" />
+ </fieldset>
+ <fieldset class="action">
+ <input value="Salvar" type="submit" class="btn" />
+ <a class="close cancel" href="#">Cancelar</a>
+ </fieldset>
+ </form>
+ <p>...ou...</p>
+ [% ELSE %]
+ [% IF ( singleshelf ) %]
+ <form name="f1" action="/cgi-bin/koha/opac-addbybiblionumber.pl" method="post">
+ [% FOREACH biblio IN biblios %]
+ <input type="hidden" name="biblionumber" value="[% biblio.biblionumber %]">
+ [% END %]
+ <input type="hidden" name="shelfnumber" value="[% shelfnumber %]" />
+ <input type="hidden" name="modifyshelfcontents" value="1" /></fieldset>
+ <fieldset class="action">
+ <input value="Salvar" type="submit" class="btn" />
+ <a class="close cancel" href="#">Cancelar</a>
+ </fieldset>
+ </form>
+ [% END %]
+ [% END # IF / existingshelves %]
+ [% END # / UNLESS newshelf %]
+
+ [% UNLESS ( singleshelf ) %]
+ <form name="f2" method="post" action="/cgi-bin/koha/opac-addbybiblionumber.pl">
+ <fieldset>
+ <legend>Adicionar a uma nova lista:</legend>
+ <label for="newvirtualshelf">Nome da lista:</label>
+ <input type="text" name="newvirtualshelf" id="newvirtualshelf" size="40" />
+ <label for="category">Categoria:</label>
+ <select name="category" id="category">
+ <option value="1">Privado</option>
+ [% IF (OpacAllowPublicListCreation) %]
+ <option value="2">Público</option>
+ [% END %]
+ </select>
+ </fieldset>
+ [% FOREACH biblio IN biblios %]
+ <input type="hidden" name="biblionumber" value="[% biblio.biblionumber | html%]" />
+ [% END %]
+ <fieldset class="action">
+ <input value="Salvar" type="submit" class="btn" />
+ <a class="close cancel" href="#">Cancelar</a>
+ </fieldset>
+ </form>
+ [% END # / UNLESS singleshelf %]
+ [% ELSE %]
+ <p>
+ [% IF (errcode==1) %] Não foi possível criar uma nova lista. Verifique se o nome é único. [% ELSE %] Desculpe, você não pode adicionar itens a esta lista. [% END %] </p>
+ [% END # IF authorized %]
+ <p><a href="#" class="close">Fechar esta janela.</a></p>
+ </div> <!-- / #useraddbybiblionumber -->
+ </div> <!-- / .span12 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' is_popup=1 %]
+[% BLOCK jsinclude %][% END %]
